@@ -1,24 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useRef, useState } from 'react';
+// import uuidv4 from 'uuid/v4';
+import TodoList from './TodoList';
 
 function App() {
+  const [todos, setTodos] = useState([
+    // { id: 1, name: 'TASK 1', complete: false },
+  ]);
+  const taskNameRef = useRef();
+  const LOCAL_STORAGE_KEY = 'todoApp.todos';
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos));
+  }, [todos]);
+
+  useEffect(() => {
+    const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    if (storedTodos) setTodos(storedTodos);
+  }, []);
+
+  function handleAddTask(e) {
+    const name = taskNameRef.current.value;
+    if (name === '') return;
+    console.log(name);
+    setTodos((prevTodos) => {
+      return [...prevTodos, { id: 1, name: name, complete: false }];
+    });
+    taskNameRef.current.value = null;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <TodoList todos={todos} />
+      <br />
+      <input ref={taskNameRef} type="text" />
+      <button onClick={handleAddTask}>DO NOT PRESS</button>
+      <button>Press Me To Delete The Internet</button>
+      <div>0 Things Left</div>
+    </>
   );
 }
 
